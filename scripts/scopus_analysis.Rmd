@@ -1,0 +1,65 @@
+---
+title: "scopus_analysis"
+author: "daniellembecker"
+date: "2024-02-01"
+output: html_document
+---
+
+# Using the analysis output from [Scopus](https://www.scopus.com/term/analyzer.uri?sort=plf-f&src=s&sid=c3cad66d9c803eb9e767bdd52c487fb7&sot=a&sdt=a&sl=16&s=ALL%28sealifebase%29&origin=resultslist&count=10&analyzeResults=Analyze+results) where I searched SeaLifeBase citations.
+
+
+# Load libraries
+
+```{r}
+library(ggplot2)
+library(ggthemes)
+library(tidyverse)
+library(dplyr)
+library(utils)
+```
+
+# Load all data files
+
+```{r}
+
+# Specify the folder path
+folder_path <- "data/scopus_analyze_data/"
+
+# Get a list of all CSV files in the folder
+csv_files <- list.files(folder_path, pattern = "\\.csv$", full.names = TRUE)
+
+# Read and skip the first seven rows for each CSV file, store in a list
+all_data <- map(csv_files, ~{
+  current_data <- read_csv(.x, skip = 7)
+  # Rename the second column to the number of documents
+  colnames(current_data)[2] <- 'number of documents'
+  current_data
+})
+
+#name individual files
+affiliation <- all_data[[1]]
+author <- all_data[[2]]
+country <- all_data[[3]]
+doctype <- all_data[[4]]
+funding.sponsor <- all_data[[5]]
+# Rename the first column to 'funding_sponsor'
+colnames(funding.sponsor)[1] <- 'funding_sponsor'
+source <- all_data[[6]]
+subject <- all_data[[7]]
+year <- all_data[[8]]
+
+```
+
+
+# Make pie charts for subject area and document type
+```{r}
+
+
+```
+
+
+
+
+
+
+
