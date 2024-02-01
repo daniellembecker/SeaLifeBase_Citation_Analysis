@@ -32,7 +32,7 @@ csv_files <- list.files(folder_path, pattern = "\\.csv$", full.names = TRUE)
 all_data <- map(csv_files, ~{
   current_data <- read_csv(.x, skip = 7)
   # Rename the second column to the number of documents
-  colnames(current_data)[2] <- 'number of documents'
+  colnames(current_data)[2] <- 'number_documents'
   current_data
 })
 
@@ -48,12 +48,45 @@ source <- all_data[[6]]
 subject <- all_data[[7]]
 year <- all_data[[8]]
 
+# Save each data frame to a separate CSV file
+save_data_frame <- function(data_frame, file_name) {
+  output_file <- file.path("output/scopus_csv/", paste0(file_name, ".csv"))
+  write.csv(data_frame, file = output_file, row.names = FALSE)
+}
+
+# Save each data frame
+save_data_frame(affiliation, "affiliation")
+save_data_frame(author, "author")
+save_data_frame(country, "country")
+save_data_frame(doctype, "doctype")
+save_data_frame(funding.sponsor, "funding_sponsor")
+save_data_frame(source, "source")
+save_data_frame(subject, "subject")
+save_data_frame(year, "year")
+
 ```
 
 
-# Make pie charts for subject area and document type
+# Figure 1 for SeaLifeBase
 ```{r}
 
+# Create a bar chart
+year.plot <- year %>%
+  ggplot(aes(x=YEAR, y=number_documents))+
+  geom_line() + 
+  geom_point() +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0)) +
+  ylab("Scopus Citations")+
+  xlab("Year")+
+  theme(axis.text.x = element_text(angle = 0, margin = margin(t = 10)),  # Adjust the margin as needed
+        axis.title = element_text(size = 16), # Adjust the size of x and y axis labels
+        axis.text = element_text(size = 16)) + # Adjust the margin as needed
+   scale_x_continuous(breaks = unique(year$YEAR), limits = c(min(year$YEAR), max(year$YEAR) + 1), expand = c(0, 0))+
+  scale_y_continuous(limits = c(0, 90), breaks = seq(0, 90, by = 10), expand = c(0, 0));year.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/scopus_plots/year_output.png", plot = year.plot, width = 15, height = 6, dpi = 300)
 
 ```
 
