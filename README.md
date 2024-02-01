@@ -1,1 +1,5 @@
 # SeaLifeBase_Citation_Analysis
+
+Repository used for data analysis and orgnaization for a citation analysis of [SeaLifeBase](https://www.sealifebase.ca/) which is a global online database and resource providing information about marine life. It aims to provide key information on the taxonomy, distribution and ecology of all marine species in the world apart from finfish. SeaLifeBase is in partnership with the WorldFish Center in Malaysia and the UBC Institute for the Oceans and Fisheries at the University of British Columbia. Daniel Pauly is the principal investigator and it is coordinated by Maria Lourdes D. Palomares. As of March 2023, it included descriptions of 85,000 species, 59,400 common names, 15,500 pictures, and references to 39,300 works in the scientific literature. SeaLifeBase complements FishBase, which provides parallel information for finfish.
+
+Our paper aims to measure the impact of SeaLifeBase and explore the scolarly impact of it for use by scientists, institutions, and public data exploration. 
