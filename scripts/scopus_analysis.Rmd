@@ -16,6 +16,8 @@ library(ggthemes)
 library(tidyverse)
 library(dplyr)
 library(utils)
+install.packages(c("leaflet"))
+library(leaflet)
 ```
 
 # Load all data files
@@ -82,7 +84,7 @@ year.plot <- year %>%
   theme(axis.text.x = element_text(angle = 0, margin = margin(t = 10)),  # Adjust the margin as needed
         axis.title = element_text(size = 16), # Adjust the size of x and y axis labels
         axis.text = element_text(size = 16)) + # Adjust the margin as needed
-   scale_x_continuous(breaks = unique(year$YEAR), limits = c(min(year$YEAR), max(year$YEAR) + 1), expand = c(0, 0))+
+   scale_x_continuous(breaks = unique(year$YEAR), limits = c(min(year$YEAR), max(year$YEAR) - 1), expand = c(0, 0))+
   scale_y_continuous(limits = c(0, 90), breaks = seq(0, 90, by = 10), expand = c(0, 0));year.plot
 
 # Save the ggplot to a file (e.g., in PNG format)
@@ -90,6 +92,24 @@ ggsave("output/scopus_plots/year_output.png", plot = year.plot, width = 15, heig
 
 ```
 
+
+# Figure 3 for SeaLifeBase
+```{r}
+
+# Make bubble plot worldview of locations of sealifebase citations
+bubble_map <- leaflet(data = country) %>%
+  setView(lng = 0, lat = 0, zoom = 2) %>%
+  addProviderTiles("CartoDB.Positron") %>%  # Choose a tileset
+  addCircleMarkers(
+    radius = ~sqrt(number_documents) * 2,  # Adjust the scaling factor as needed
+    color = "blue",
+    fillOpacity = 0.7,
+    popup = ~paste("Country/Territory: ", `COUNTRY/TERRITORY`, "<br>Number of Documents: ", number_documents)
+  )
+
+
+
+```
 
 
 
