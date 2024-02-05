@@ -126,8 +126,10 @@ cat("\nCommon citations:", nrow(common_citations), "\n")
 print(common_citations)
 #316
 
-#first checked and all 9 citation titles in df1 above are in df2
-#looking at scopus for 88 citation titles to confirm they are found in df2
+#first checked 9 citation DOIs from df1 online to confirm sealifebase is mentioned in the citation
+#then checked 88 citation DOIs from df2 online to confirm sealifebase is mentioned in the citation 
+#through number 17 may need to delete
+
 
 ```
 
