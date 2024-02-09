@@ -136,7 +136,12 @@ print(common_citations)
 
 #first checked 9 citation DOIs from df1 online to confirm sealifebase is mentioned in the citation
 #then checked 88 citation DOIs from df2 online to confirm sealifebase is mentioned in the citation 
-#through all citations, confirmed all are included in the 425 list and all are correct in including SeaLifeBase
+#through all citations, confirmed all are included in the 404 list and all are correct in including SeaLifeBase
+
+# I confirmed all the unique citations in the 325 dataframe were included in the 404 dataframe just with slight variations in title or author, so 404 dataframe is the most commprehensive list 
+
+
+
 
 
 ```
