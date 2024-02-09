@@ -110,6 +110,16 @@ sealifebase_325 <- read.csv("data/citation_list_master/scopus_extracat_citations
 
 sealifebase_404 <- read.csv("data/citation_list_master/scopus_sealifebase_404.csv")
 
+#found zero duplicates in either dataframe
+
+duplicates <- duplicated(sealifebase_404)
+
+print(sealifebase_404[duplicates, ])
+
+duplicates <- duplicated(sealifebase_325)
+
+print(sealifebase_325[duplicates, ])
+
 # Find citations that are in df1 but not in df2
 unique_to_df1 <- anti_join(sealifebase_325, sealifebase_404)
 
@@ -139,8 +149,6 @@ print(common_citations)
 #through all citations, confirmed all are included in the 404 list and all are correct in including SeaLifeBase
 
 # I confirmed all the unique citations in the 325 dataframe were included in the 404 dataframe just with slight variations in title or author, so 404 dataframe is the most commprehensive list 
-
-
 
 
 
