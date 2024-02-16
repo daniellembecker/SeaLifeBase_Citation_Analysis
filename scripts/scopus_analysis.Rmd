@@ -14,6 +14,7 @@ output: html_document
 library(ggplot2)
 library(ggthemes)
 library(tidyverse)
+library(maps)
 library(dplyr)
 library(utils)
 install.packages(c("leaflet"))
@@ -154,7 +155,26 @@ print(common_citations)
 
 ```
 
+# Make geographical bubble map of distribution and number of douments in different countries
+```{r}
 
+#load bubble map data
+bub.dat <- read_csv("output/scopus_csv/country_bubblemap.csv")
+
+# create data for world coordinates using map_data() function 
+world_coordinates <- map_data("world") 
+  
+# create world map using ggplot() function 
+# geom_map() function takes world coordinates as input to plot world map color parameter determines the color of borders in map fill parameter determines the color of fill in map size determines the thickness of border in map 
+
+ggplot() + 
+  geom_map(data = world_coordinates, map = world_coordinates, 
+    aes(long, lat, map_id = region), fill= "cadetblue2")+ 
+  geom_point(data = bub.dat, aes(lon, lat, color = documents, size=size), alpha = 1) +  # geom_point function is used to plot scatter plot on top of world map 
+theme_bw() +  # Apply black and white theme
+  theme(legend.position = "none") # legend.position as none removes the legend 
+
+```
 
 
 
