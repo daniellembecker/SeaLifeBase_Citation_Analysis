@@ -1,0 +1,99 @@
+---
+title: "general_analysis"
+author: "daniellembecker"
+date: "2024-03-06"
+output: html_document
+---
+
+
+# Load libraries
+
+```{r}
+library(ggplot2)
+library(ggthemes)
+library(tidyverse)
+library(dplyr)
+library(png)
+library(grid)
+library(patchwork)
+library(cowplot)
+```
+
+
+
+# Figure 1 for SeaLifeBase, species per year added since 2005
+```{r}
+
+# make species added per year for SLB
+species <- read.csv("data/SLB_species.csv")
+
+# Convert "Year" to factor with levels from 2005 to 2024
+species$Year <- factor(species$Year, levels = as.character(2005:2024))
+
+# Filter out data for the year 2024
+filtered_species <- subset(species, Year != "2024")
+
+# Create the plot
+species.plot <- ggplot(filtered_species, aes(x = Year, y = No..of.species)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 0, margin = margin(t = 10, b = 10)),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 16)
+  ) +
+  ylab("Number of species added in SeaLifeBase") +
+  xlab("Year") +
+  #coord_cartesian(ylim = c(0, 35000)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 32000), breaks = seq(0, 32000, by = 5000));species.plot  # Ensure y-axis starts from 0
+
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/manuscript_figures/species_output.png", plot = species.plot, width = 15, height = 8, dpi = 300)
+
+```
+
+#combine figure 2 for citations per year from scopus and WOS
+```{r}
+#read in pngs and combine for Figure 2
+scopus.year <- readPNG("output/scopus_plots/year_output.png")
+scopus.year <- rasterGrob(scopus.year, interpolate=TRUE)
+
+WOS.year <- readPNG("output/WOS_plots/year_output.png")
+WOS.year <- rasterGrob(WOS.year, interpolate=TRUE)
+Figure2 <- plot_grid(scopus.year, WOS.year, labels = c('A', 'B'), label_size = 14);Figure2
+
+ggsave(filename=paste0("output/manuscript_figures/years.plot.png"), plot=Figure2, dpi=300, width=20, height=5, units="in", limitsize = FALSE)
+
+
+```
+
+#combine figure 4 for research area documents from scopus and WOS
+```{r}
+#read in pngs and combine for Figure 2
+scopus.subject <- readPNG("output/scopus_plots/subject_output.png")
+scopus.subject  <- rasterGrob(scopus.subject, interpolate=TRUE)
+
+WOS.subject  <- readPNG("output/WOS_plots/subject_output.png")
+WOS.subject  <- rasterGrob(WOS.subject, interpolate=TRUE)
+Figure4 <- plot_grid(scopus.subject, WOS.subject, labels = c('A', 'B'), label_size = 14);Figure4
+
+ggsave(filename=paste0("output/manuscript_figures/subject.plot.png"), plot=Figure4, dpi=300, width=20, height=5, units="in", limitsize = FALSE)
+
+
+```
+
+#combine figure for doument types from scopus and WOS
+```{r}
+#read in pngs and combine for Figure 2
+scopus.doc <- readPNG("output/scopus_plots/doctype_output.png")
+scopus.doc  <- rasterGrob(scopus.doc, interpolate=TRUE)
+
+WOS.doc  <- readPNG("output/WOS_plots/doctypes_output.png")
+WOS.doc  <- rasterGrob(WOS.doc, interpolate=TRUE)
+Figure5 <- plot_grid(scopus.doc, WOS.doc, labels = c('A', 'B'), label_size = 14);Figure5
+
+ggsave(filename=paste0("output/manuscript_figures/doctypes.plot.png"), plot=Figure5, dpi=300, width=20, height=5, units="in", limitsize = FALSE)
+
+
+```

@@ -1,0 +1,147 @@
+---
+title: "WOS_analysis"
+author: "daniellembecker"
+date: "2024-02-23"
+output: html_document
+---
+
+# Using the analysis output from [World of Science](https://www-webofscience-com.uri.idm.oclc.org/wos/woscc/analyze-results/a9983dd5-99b1-45d6-bcd8-490cc226cd77-cc621d04) where I searched SeaLifeBase citations.
+
+
+# Load libraries
+
+```{r}
+library(ggplot2)
+library(ggthemes)
+library(tidyverse)
+library(maps)
+library(purrr)
+library(readr)
+library(dplyr)
+library(utils)
+install.packages(c("leaflet"))
+library(leaflet)
+```
+
+# Load all data files
+
+```{r}
+
+# Specify the folder path
+folder_path <- "data/WOS/"
+
+# Get a list of all CSV files in the folder
+csv_files <- list.files(folder_path, pattern = "\\.csv$", full.names = TRUE)
+
+# Read each CSV file, store in a list
+all_data <- purrr::map(csv_files, ~{
+  current_data <- read_csv(.x)
+  current_data
+})
+
+#name individual files
+affiliation <- all_data[[1]]
+author <- all_data[[2]]
+categories <- all_data[[3]]
+citation.topics.meso <- all_data[[4]]
+citation.topics.micro <- all_data[[5]]
+countries <- all_data[[6]]
+doctypes <- all_data[[7]]
+funding.agencies <- all_data[[8]]
+index <- all_data[[9]]
+languages <- all_data[[10]]
+open.access <- all_data[[11]]
+years <- all_data[[12]]
+publishers <- all_data[[13]]
+research.areas <- all_data[[14]]
+sustain.dev.goals <- all_data[[15]]
+
+
+# Save each data frame to a separate CSV file
+save_data_frame <- function(data_frame, file_name) {
+  output_file <- file.path("output/WOS_csv", paste0(file_name, ".csv"))
+  write.csv(data_frame, file = output_file, row.names = FALSE)
+}
+
+# Save each data frame
+save_data_frame(affiliation, "affiliation")
+save_data_frame(author, "author")
+save_data_frame(categories, "categories")
+save_data_frame(citation.topics.meso, "citation.topics.meso")
+save_data_frame(citation.topics.micro, "citation.topics.micro")
+save_data_frame(countries, "countries")
+save_data_frame(doctypes, "doctypes")
+save_data_frame(funding.agencies, "funding.agencies")
+save_data_frame(index, "index")
+save_data_frame(languages, "languages")
+save_data_frame(open.access, "open.access")
+save_data_frame(years, "years")
+save_data_frame(publishers, "publishers")
+save_data_frame(research.areas, "research.areas")
+save_data_frame(sustain.dev.goals, "sustain.dev.goals")
+
+
+```
+
+
+# Figure 2 WOS for SeaLifeBase
+```{r}
+
+# Create a bar chart
+year.plot <- years %>%
+  ggplot(aes(x = `Publication Years`, y = `Record Count`)) +
+  geom_line() + 
+  geom_point() +
+  theme_classic() +
+    theme(
+    axis.text.x = element_text(angle = 0, margin = margin(t = 10, b = 10)),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 16),
+    plot.margin = margin(t = 30, r = 40)) + # Adjusted top and right margi
+  ylab("Web of Science Citations") +
+  xlab("Year") +
+  scale_x_continuous(
+    breaks = seq(2009, 2023, by = 1),  # Include all years from 2008 to 2023
+    limits = c(2009, 2023),  # Adjusted limits
+    expand = c(0, 0)) +
+  coord_cartesian(clip = 'off') + #adjusts the cutoff so geom points stay intact
+  scale_y_continuous(
+    limits = c(0, 40),
+    breaks = seq(0, 40, by = 10),
+    expand = c(0, 0));year.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/WOS_plots/year_output.png", plot = year.plot, width = 15, height = 8, dpi = 300)
+
+```
+
+
+
+# Make figure 4 research areas/discipline for scopus and then also scopus and WOS side by side
+
+```{r}
+
+# Create a bar chart
+subject.plot <- research.areas %>%
+    ggplot(aes(x = `Research Areas`, y = `Record Count`)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+    theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 20),
+    axis.text.y = element_text(size = 20),
+    axis.title.x = element_text(size = 24),
+    axis.title.y = element_text(size = 24),
+    plot.margin = margin(l = 40, r = 5, t = 10, b = 5, unit = "pt")) + # Adjusted top and right margi
+  ylab("Number of Documents") +
+  xlab("Research Area") +
+scale_y_continuous(expand = c(0, 0), limits = c(0, 200), breaks = seq(0, 200, by = 50));subject.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/WOS_plots/subject_output.png", plot = subject.plot, width = 34, height = 20, dpi = 300)
+
+```
+
+
+
+
+

@@ -17,8 +17,11 @@ library(tidyverse)
 library(maps)
 library(dplyr)
 library(utils)
-install.packages(c("leaflet"))
+#install.packages(c("leaflet"))
 library(leaflet)
+# Install and load the bibliometrix package
+#install.packages("bibliometrix")
+library(bibliometrix)
 ```
 
 # Load all data files
@@ -32,7 +35,7 @@ folder_path <- "data/scopus_group_data/"
 csv_files <- list.files(folder_path, pattern = "\\.csv$", full.names = TRUE)
 
 # Read and skip the first seven rows for each CSV file, store in a list
-all_data <- map(csv_files, ~{
+all_data <- purrr::map(csv_files, ~{
   current_data <- read_csv(.x, skip = 7)
   # Rename the second column to the number of documents
   colnames(current_data)[2] <- 'number_documents'
@@ -70,7 +73,7 @@ save_data_frame(year, "year")
 ```
 
 
-# Figure 1 for SeaLifeBase
+# Figure 2 scopus for SeaLifeBase
 ```{r}
 
 # Create a bar chart
@@ -167,16 +170,110 @@ world_coordinates <- map_data("world")
 # create world map using ggplot() function 
 # geom_map() function takes world coordinates as input to plot world map color parameter determines the color of borders in map fill parameter determines the color of fill in map size determines the thickness of border in map 
 
-ggplot() + 
+bubble.map <-ggplot() + 
   geom_map(data = world_coordinates, map = world_coordinates, 
-    aes(long, lat, map_id = region), fill= "cadetblue2")+ 
+    aes(long, lat, map_id = region), fill= "lightskyblue2", color = "lightgrey")+ 
   geom_point(data = bub.dat, aes(lon, lat, color = documents, size=size), alpha = 1) +  # geom_point function is used to plot scatter plot on top of world map 
+
 theme_bw() +  # Apply black and white theme
-  theme(legend.position = "none") # legend.position as none removes the legend 
+    theme(legend.position = "none", 
+        axis.text = element_text(face = "bold"));bubble.map # legend.position as none removes the legend 
+
+ggsave("output/scopus_plots/bubble.png", bubble.map, height = 10, width = 18, dpi = 300)
+```
+
+
+# Make figure 4 research areas/discipline for scopus and then also scopus and WOS side by side
+
+```{r}
+
+# Create a bar chart
+subject.plot <- subject %>%
+  ggplot(aes(x = `SUBJECT AREA`, y = number_documents)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+    theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 20),
+    axis.text.y = element_text(size = 20),
+    axis.title.x = element_text(size = 24),
+    axis.title.y = element_text(size = 24),
+    plot.margin = margin(l = 40, r = 5, t = 10, b = 5, unit = "pt")) + # Adjusted top and right margi
+  ylab("Number of Documents") +
+  xlab("Research Area") +
+scale_y_continuous(expand = c(0, 0), limits = c(0, 300), breaks = seq(0, 300, by = 100));subject.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/scopus_plots/subject_output.png", plot = subject.plot, width = 34, height = 20, dpi = 300)
 
 ```
 
 
+# Make figure for document types for scopus and then also scopus and WOS side by side
+
+```{r}
+
+# Create a bar chart
+doctype.plot <- doctype %>%
+  ggplot(aes(x = `DOCUMENT TYPE`, y = number_documents)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+    theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 20),
+    axis.text.y = element_text(size = 20),
+    axis.title.x = element_text(size = 24),
+    axis.title.y = element_text(size = 24),
+    plot.margin = margin(l = 40, r = 5, t = 10, b = 5, unit = "pt")) + # Adjusted top and right margi
+  ylab("Number of Documents") +
+  xlab("Document Type") +
+scale_y_continuous(expand = c(0, 0), limits = c(0, 350), breaks = seq(0, 350, by = 50));doctype.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/scopus_plots/doctype_output.png", plot = doctype.plot, width = 20, height = 10, dpi = 300)
+
+```
+
+
+# Make figure for affiiations for scopus and then also scopus and WOS side by side
+
+```{r}
+
+# Create a bar chart
+doctype.plot <- doctype %>%
+  ggplot(aes(x = `DOCUMENT TYPE`, y = number_documents)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+    theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 20),
+    axis.text.y = element_text(size = 20),
+    axis.title.x = element_text(size = 24),
+    axis.title.y = element_text(size = 24),
+    plot.margin = margin(l = 40, r = 5, t = 10, b = 5, unit = "pt")) + # Adjusted top and right margi
+  ylab("Number of Documents") +
+  xlab("Document Type") +
+scale_y_continuous(expand = c(0, 0), limits = c(0, 350), breaks = seq(0, 350, by = 50));doctype.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/scopus_plots/doctype_output.png", plot = doctype.plot, width = 20, height = 10, dpi = 300)
+
+```
+
+
+# try citation blast analysis
+```{r}
+
+# load full scopus data
+scopus <- read.csv("data/citation_list_master/master_citation_list_scopus.csv")
+
+# Selecting specific columns (ID, Name) to create a new dataframe
+data <- scopus[, c("Authors", "Year", "Cited.by", "Title")]
+
+# Convert the data frame to a bibliographic data structure
+biblio <- convert2df(data, dbsource = "isi")
+
+# Basic bibliometric analysis
+result <- biblioAnalysis(biblio)
+
+```
 
 
 
