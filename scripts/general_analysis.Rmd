@@ -55,16 +55,39 @@ ggsave("output/manuscript_figures/species_output.png", plot = species.plot, widt
 
 #combine figure 2 for citations per year from scopus and WOS
 ```{r}
-#read in pngs and combine for Figure 2
+
+# Read in PNGs and convert to grobs
+hits.year <- readPNG("output/scopus_plots/hits_output.png")
+hits.year <- rasterGrob(hits.year, interpolate = TRUE)
+
 scopus.year <- readPNG("output/scopus_plots/year_output.png")
-scopus.year <- rasterGrob(scopus.year, interpolate=TRUE)
+scopus.year <- rasterGrob(scopus.year, interpolate = TRUE)
 
 WOS.year <- readPNG("output/WOS_plots/year_output.png")
-WOS.year <- rasterGrob(WOS.year, interpolate=TRUE)
-Figure2 <- plot_grid(scopus.year, WOS.year, labels = c('A', 'B'), label_size = 14);Figure2
+WOS.year <- rasterGrob(WOS.year, interpolate = TRUE)
 
-ggsave(filename=paste0("output/manuscript_figures/years.plot.png"), plot=Figure2, dpi=300, width=20, height=5, units="in", limitsize = FALSE)
+# Increase the label size and size of the plots
+label_size <- 24
+plot_size <- 24  # Adjust as needed
 
+# Create the grid of plots with WOS.year on a new row
+Figure2 <- plot_grid(
+  plot_grid(hits.year, scopus.year, ncol = 2, labels = c('A', 'B'), label_size = label_size, rel_heights = rep(1, 2)),
+  plot_grid(WOS.year, labels = 'C', label_size = label_size),
+  nrow = 2,
+  rel_heights = c(1, 0.8)  # Adjust the height of the rows
+)
+
+# Save the figure
+ggsave(
+  filename = "output/manuscript_figures/hits.year.plot.png",
+  plot = Figure2,
+  dpi = 300,
+  width = 16,  # Adjust width as needed
+  height = 9,  # Adjust height as needed
+  units = "in",
+  limitsize = FALSE
+)
 
 ```
 
@@ -76,9 +99,9 @@ scopus.subject  <- rasterGrob(scopus.subject, interpolate=TRUE)
 
 WOS.subject  <- readPNG("output/WOS_plots/subject_output.png")
 WOS.subject  <- rasterGrob(WOS.subject, interpolate=TRUE)
-Figure4 <- plot_grid(scopus.subject, WOS.subject, labels = c('A', 'B'), label_size = 14);Figure4
+Figure4 <- plot_grid(scopus.subject, WOS.subject, ncol = 1, align = "v", labels = c('A', 'B'), label_size = 12);Figure4  # Increase text size for all elements
 
-ggsave(filename=paste0("output/manuscript_figures/subject.plot.png"), plot=Figure4, dpi=300, width=20, height=5, units="in", limitsize = FALSE)
+ggsave(filename=paste0("output/manuscript_figures/subject.plot.png"), plot=Figure4, dpi=300, width=5, height=5, units="in", limitsize = FALSE)
 
 
 ```

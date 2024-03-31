@@ -120,10 +120,47 @@ ggsave("output/WOS_plots/year_output.png", plot = year.plot, width = 15, height 
 # Make figure 4 research areas/discipline for scopus and then also scopus and WOS side by side
 
 ```{r}
+# Remove a column named 'columnName'
+research.areas <- research.areas[, -3]
+
+# Select the top 8 research areas (excluding NA) to include on the plot
+top_researchareas <- na.omit(research.areas$`Research Areas`)
+top_researchareas <- top_researchareas[order(research.areas$`Record Count`, decreasing = TRUE)][1:8]
+
+# Reorder 'Research Areas' based on the descending order of 'Record Count', but only include top 8 (excluding NA)
+research.areas$`Research Areas` <- factor(research.areas$`Research Areas`, levels = top_researchareas)
+
+# Remove rows with NA values from the subject dataframe
+research.areas <- na.omit(research.areas)
+
 
 # Create a bar chart
-subject.plot <- research.areas %>%
+subject_WOS.plot <- research.areas %>%
     ggplot(aes(x = `Research Areas`, y = `Record Count`)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+    theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 30),
+    axis.text.y = element_text(size = 30),
+    axis.title.x = element_text(size = 30),
+    axis.title.y = element_text(size = 30),
+    plot.margin = margin(l = 40, r = 5, t = 10, b = 5, unit = "pt")) + # Adjusted top and right margi
+  ylab("Number of Documents") +
+  xlab("Research Area") +
+scale_y_continuous(expand = c(0, 0), limits = c(0, 200), breaks = seq(0, 200, by = 50));subject_WOS.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/WOS_plots/subject_output.png", plot = subject_WOS.plot, width = 34, height = 20, dpi = 300)
+
+```
+
+# Make figure for document types for scopus and then also scopus and WOS side by side
+
+```{r}
+
+# Create a bar chart
+doctypes.plot <- doctypes %>%
+  ggplot(aes(x = `Document Types`, y = `Record Count`)) +
   geom_bar(stat = "identity") +
   theme_classic() +
     theme(
@@ -133,14 +170,13 @@ subject.plot <- research.areas %>%
     axis.title.y = element_text(size = 24),
     plot.margin = margin(l = 40, r = 5, t = 10, b = 5, unit = "pt")) + # Adjusted top and right margi
   ylab("Number of Documents") +
-  xlab("Research Area") +
-scale_y_continuous(expand = c(0, 0), limits = c(0, 200), breaks = seq(0, 200, by = 50));subject.plot
+  xlab("Document Type") +
+scale_y_continuous(expand = c(0, 0), limits = c(0, 310), breaks = seq(0, 310, by = 50));doctypes.plot
 
 # Save the ggplot to a file (e.g., in PNG format)
-ggsave("output/WOS_plots/subject_output.png", plot = subject.plot, width = 34, height = 20, dpi = 300)
+ggsave("output/WOS_plots/doctypes_output.png", plot = doctypes.plot, width = 20, height = 10, dpi = 300)
 
 ```
-
 
 
 

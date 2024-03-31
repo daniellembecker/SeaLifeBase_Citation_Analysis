@@ -75,6 +75,34 @@ save_data_frame(year, "year")
 
 # Figure 2 scopus for SeaLifeBase
 ```{r}
+#read in hits data
+hits <- read.csv("data/SLB_webhits_yearly.csv")
+
+#make hits per year plot from data
+hits.plot <- hits %>%
+  ggplot(aes(x = Year, y = Visits)) +
+  geom_line() + 
+  geom_point() +
+  theme_classic() +
+    theme(
+    axis.text.x = element_text(angle = 0, margin = margin(t = 10, b = 10)),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 16),
+    plot.margin = margin(t = 30, r = 40)) + # Adjusted top and right margi
+  ylab("Hits") +
+  xlab("Year") +
+  scale_x_continuous(
+    breaks = seq(2015, 2023, by = 1),  # Include all years from 2008 to 2023
+    limits = c(2015, 2023),  # Adjusted limits
+    expand = c(0, 0)) +
+  coord_cartesian(clip = 'off') + #adjusts the cutoff so geom points stay intact
+  scale_y_continuous(
+    limits = c(800000, 9000000),
+    breaks = seq(800000, 9000000, by = 2000000),
+    expand = c(0, 0));hits.plot
+
+# Save the ggplot to a file (e.g., in PNG format)
+ggsave("output/scopus_plots/hits_output.png", plot = hits.plot, width = 15, height = 8, dpi = 300)
 
 # Create a bar chart
 year.plot <- year %>%
@@ -101,6 +129,8 @@ year.plot <- year %>%
 
 # Save the ggplot to a file (e.g., in PNG format)
 ggsave("output/scopus_plots/year_output.png", plot = year.plot, width = 15, height = 8, dpi = 300)
+
+
 
 ```
 
@@ -179,7 +209,7 @@ theme_bw() +  # Apply black and white theme
     theme(legend.position = "none", 
         axis.text = element_text(face = "bold"));bubble.map # legend.position as none removes the legend 
 
-ggsave("output/scopus_plots/bubble.png", bubble.map, height = 10, width = 18, dpi = 300)
+ggsave("output/scopus_plots/bubble.png", bubble.map, height = 10, width = 12, dpi = 300)
 ```
 
 
@@ -187,16 +217,25 @@ ggsave("output/scopus_plots/bubble.png", bubble.map, height = 10, width = 18, dp
 
 ```{r}
 
+# Select the top 8 research areas (excluding NA) to include on the plot
+top_subjects <- top_subjects[order(subject$number_documents, decreasing = TRUE)][1:8]
+
+# Reorder 'SUBJECT AREA' based on the descending order of 'number_documents', but only include top 8 (excluding NA)
+subject$`SUBJECT AREA` <- factor(subject$`SUBJECT AREA`, levels = top_subjects)
+
+# Remove rows with NA values from the subject dataframe
+subject <- na.omit(subject)
+
 # Create a bar chart
 subject.plot <- subject %>%
   ggplot(aes(x = `SUBJECT AREA`, y = number_documents)) +
   geom_bar(stat = "identity") +
   theme_classic() +
     theme(
-    axis.text.x = element_text(angle = 60, hjust = 1, size = 20),
-    axis.text.y = element_text(size = 20),
-    axis.title.x = element_text(size = 24),
-    axis.title.y = element_text(size = 24),
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 30),
+    axis.text.y = element_text(size = 30),
+    axis.title.x = element_text(size = 30),
+    axis.title.y = element_text(size = 30),
     plot.margin = margin(l = 40, r = 5, t = 10, b = 5, unit = "pt")) + # Adjusted top and right margi
   ylab("Number of Documents") +
   xlab("Research Area") +
